@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible"/>
+  <meta name="description" content="goes here..."/>
+  <meta name="keywords" content="keyword 1, keyword 2"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="robots"/>
+  	<style>
+		.mousepad{
+			width:640px;
+			height:480px;
+			background-color:#1d1d1d;
+			position:relative
+		}
+		.wrapper{
+			position:relative;
+			width:640px;
+			height:480px;
+			margin:0 auto;
+		}
+		.wrapper #textId{
+			text-align:center;
+		}
+		.new-pointer{
+			position:absolute;
+			width:32px;
+			margin-left: -3px;
+			margin-top: -42px;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<h1 id="textId">Hello World</h1>
+		<div class="mousepad">
+			<img class="new-pointer" src=" /img/pin.png"/>
+		</div>
+		
+	</div>
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="socket.io/socket.io.js"></script>
+	<script>
+		function changeHeader(text) {
+			$('h1#textId').empty().append(text);
+		};
+
+		function updateMousePointer(coordinateData){
+			$('.new-pointer').css('top', coordinateData.y).css('left',coordinateData.x);
+		}
+		
+		//Connect to the server via socket
+		var socket = io.connect('http://localhost');
+
+		socket.on('client connected', function(data) {
+			changeHeader(data.message);
+		});
+		socket.on('update accel data',function(data){
+			updateMousePointer(data.coordinateData);
+		});
+	</script>
+</body>
+</html>

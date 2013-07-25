@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible"/>
+  <meta name="description" content="goes here..."/>
+  <meta name="keywords" content="keyword 1, keyword 2"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta name="robots"/>
+  	<style>
+		.mousepad{
+			width:640px;
+			height:480px;
+			background-color:#1d1d1d;
+		}
+		.wrapper{
+			width:640px;
+			height:480px;
+			margin:0 auto;
+		}
+		.wrapper #textId{
+			text-align:center;
+		}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<h1 id="textId">Hello World</h1>
+		<div class="mousepad"></div>
+	</div>
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="socket.io/socket.io.js"></script>
+	<script>
+		function changeHeader(text) {
+			$('h1#textId').empty().append(text);
+		};
+
+		function sendMousePointer(x,y,z){
+			z = 0 || z;
+			socket.emit('accel data',{posX:x,posY:y,posZ:z});
+		}
+		
+		//Connect to the server via socket
+		var socket = io.connect('http://localhost');
+
+		socket.on('client connected', function(data) {
+			changeHeader(data.message);
+		});
+		
+		$(".mousepad").mousemove(function(evt){
+			var x = evt.pageX - $(this).offset().left
+			var y = evt.pageY - $(this).offset().top
+			sendMousePointer(x,y)
+		});
+		
+		socket.on('user disconnected',function(){
+			console.log('no clients added');
+		});
+	</script>
+</body>
+</html>
