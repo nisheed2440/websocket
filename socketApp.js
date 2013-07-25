@@ -7,6 +7,25 @@ var app = require('express')()
   , server = require('http').createServer(app)
   , io = require('socket.io').listen(server);
 
+var tiltDirection = function(x,y,z){
+	
+	var dir = '';
+	
+	if(Math.round(x,4) > 4.0000){
+		dir = "TILT LEFT";
+    }
+    else if(Math.round(x,4) < -4.0000){
+    	dir = "TILT RIGHT";
+    }
+    else if(Math.round(y,4) < -4.0000){
+    	dir = "TILT FORWARD";
+    }
+    else if(Math.round(y,4) > 4.0000){
+    	dir = "TILT BACKWARD";
+    }
+	return dir;
+};
+
 
 //Assign the port to listen to
 server.listen(8080);
@@ -56,8 +75,11 @@ io.sockets.on('connection', function (socket) {
      coordinateData.x = data.posX;
      coordinateData.y = data.posY;
      coordinateData.z = data.posZ;
-     console.log(JSON.stringify(coordinateData));
-     io.sockets.emit('update accel data',{coordinateData:coordinateData});
+     
+     var tiltDir = tiltDirection(data.posX,data.posY,data.posZ);
+     
+     //Send this event to the client to do whatever
+     io.sockets.emit('update accel data',{coordinateData:tiltDir});
   });
   
   //When socket is disconnected
